@@ -10,5 +10,5 @@ My first social media clone like a twitter
 
 ## Info App
 
--   Version : 0.1.1
+-   Version : 0.1.4
 -   Debug : True
