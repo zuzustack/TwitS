@@ -1,7 +1,9 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark text-light">
         <div class="container">
-            <router-link class="navbar-brand" to="/">TwitS</router-link>
+            <router-link class="navbar-brand" :to="{ name: 'home' }"
+                >TwitS</router-link
+            >
             <button
                 class="navbar-toggler"
                 type="button"

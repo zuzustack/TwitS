@@ -123,9 +123,11 @@ class PostController extends Controller
                 'user_id' => Auth::user()->id,
                 'channel_notification_id' => $id_channel
             ]);
+
+            $user->increment('unread_notif');
         }
 
-        $user->increment('unread_notif');
+
 
         return response()->json([
             'message' => 'Like added'

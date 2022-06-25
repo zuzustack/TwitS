@@ -1,5 +1,4 @@
 <template>
-    <!-- <div class="btn btn-warning" v-on:click="test">TEst</div> -->
     <PostForm @updatePost="getPost" v-if="showForm && isLogin" />
     <div v-if="isLoad" class="posts container mt-3">
         <div v-if="posts.length > 0" v-for="(post, index) in posts">
@@ -9,7 +8,7 @@
                     <div class="profile-pos d-flex">
                         <img
                             class="rounded-circle profil-picture me-3"
-                            v-bind:src="post.user.image"
+                            v-bind:src="'/' + post.user.image"
                             alt=""
                         />
                         <div class="my-auto">

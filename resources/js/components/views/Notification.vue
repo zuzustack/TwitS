@@ -20,6 +20,10 @@
                         v-else-if="notification.type === 'comment'"
                         class="text-success"
                     />
+                    <IconUser
+                        v-else-if="notification.type === 'user'"
+                        class="text-success"
+                    />
                 </p>
             </div>
         </div>
@@ -29,6 +33,7 @@
 <script>
 import IconFullLike from "../icons/IconFullLike.vue";
 import IconComment from "../icons/IconComment.vue";
+import IconUser from "../icons/IconUser.vue";
 
 export default {
     data() {
@@ -48,6 +53,7 @@ export default {
     components: {
         IconFullLike,
         IconComment,
+        IconUser,
     },
 };
 </script>

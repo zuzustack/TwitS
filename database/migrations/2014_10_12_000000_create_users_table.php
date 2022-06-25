@@ -16,10 +16,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('followers_count')->default(0);
+            $table->integer('followings_count')->default(0);
             $table->string('username')->unique();
             $table->integer('unread_notif')->default(0);
             $table->string('bio')->default("");
-            $table->string('image')->default("/storage/default-avatar.png");
+            $table->string('image')->default("storage/default-avatar.png");
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

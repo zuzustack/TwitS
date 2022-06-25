@@ -5,7 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\channelNotification;
+use App\Models\ChannelLike;
+use App\Models\ChannelFollower;
+use App\Models\ChannelFollowing;
 use App\Models\Notification;
+use App\Models\Like;
+use App\Models\Follower;
+use App\Models\Following;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +22,7 @@ use Validator;
 class UserController extends Controller
 {
 
+    // Find User
     public function index($id){
         if (is_int(intval($id)) && intval($id) != 0){
             return response()->json( User::find($id) , 200);;
@@ -24,22 +31,23 @@ class UserController extends Controller
         }
     }
 
+    // Get Notification
     public function getNotif(){
         $user = User::find(Auth::user()->id);
         $user->unread_notif = 0;
         $user->save();
         $notifications = $user->notifications->getNotif;
+
         foreach ($notifications as $notification) {
             $notification->user;
         }
-        // $notification->user;
+
         return [
             'notifications' => $notifications
         ];
     }
 
-
-
+    // get User Post
     public function userPost($id){
         $posts = User::find($id)->posts;
 
@@ -59,16 +67,25 @@ class UserController extends Controller
     // edit user
     public function uploadImage(Request $request){
         if ($request->file('image')){
+
+            // Random Token
+            $token = Str::random(10);
+
+            // Menghapus foto yang sudah ada untuk diganti foto baru
             if (File::exists(Auth::user()->image) && !Auth::user()->image == "storage/default-avatar.png"){
                 unlink(Auth::user()->image);
             }
 
-            $token = Str::random(10);
+            // get file
             $file = $request->file('image');
+
+            // mengenerate nama file
             $filename = Auth::user()->username . "-" . $token .'.' . $file->extension();
+
+            // save file ke storage/image/user
             $file->move(public_path('storage/image/user'), $filename);
 
-
+            // Mengubah url image
             $user = Auth::user();
             $user->image = 'storage/image/user/' . $filename;
             $user->save();
@@ -91,8 +108,6 @@ class UserController extends Controller
             'message' => True
         ], 200);
     }
-
-
 
     // Register
     public function register(Request $request){
@@ -118,12 +133,24 @@ class UserController extends Controller
         User::create([
             'name' => $user['name'],
             'email' => $user['email'],
-            'username' => $user['username'],
+            'username' => "@" . $user['username'],
             'password' => bcrypt($user['password']),
         ]);
         $user =User::orderBy('created_at','desc')->first();
 
         channelNotification::create([
+            'user_id' => $user->id
+        ]);
+
+        ChannelLike::create([
+            'user_id' => $user->id
+        ]);
+
+        ChannelFollower::create([
+            'user_id' => $user->id
+        ]);
+
+        ChannelFollowing::create([
             'user_id' => $user->id
         ]);
 
@@ -133,7 +160,6 @@ class UserController extends Controller
         ];
 
     }
-
 
     // LOGIN
     public function login(Request $request){
@@ -171,6 +197,8 @@ class UserController extends Controller
             ],201);
         }
     }
+
+    // get session user
     public function getSession(Request $request){
 
         if ($request->session()->get('isLogin') == null){
@@ -178,8 +206,6 @@ class UserController extends Controller
         }
         return $request->session()->all();
     }
-
-
 
     // ==Logout
     public function logout(Request $request){
@@ -189,5 +215,92 @@ class UserController extends Controller
             'success' => true,
             'message' => "Logout Success"
         ], 200);
+    }
+
+    public function follow(Request $request){
+        $user = User::where('username',$request->username)->first();
+        $followed = $request->followed;
+        $id_channel = $user->notifications->id;
+        $check = Following::where('user_id',$user->follower->id )
+                            ->where('channel_following_id', Auth::user()->id)->first();
+
+        if (!$followed && $check == null){
+            Follower::create([
+                'user_id' => Auth::user()->id,
+                'channel_follower_id' => $user->follower->id,
+            ]);
+
+            Following::create([
+                'user_id' => $user->id,
+                'channel_following_id' => Auth::user()->following->id
+            ]);
+            $user->increment('followers_count');
+            Auth::user()->increment('followings_count');
+
+            if ($id_channel != Auth::user()->notifications->id){
+                Notification::create([
+                    'body' => 'mengikuti anda',
+                    'type' => 'user',
+                    'user_id' => Auth::user()->id,
+                    'channel_notification_id' => $id_channel
+                ]);
+
+                $user->increment('unread_notif');
+            }
+
+        }else{
+            Follower::where('user_id' ,Auth::user()->id)
+                    ->where('channel_follower_id', $user->follower->id)->first()->delete();
+            Following::where('user_id',$user->follower->id )
+                    ->where('channel_following_id', Auth::user()->id)->first()->delete();
+            $user->decrement('followers_count');
+            Auth::user()->decrement('followings_count');
+
+        };
+    }
+
+    public function checkFollow(Request $request){
+        $user = Auth::user();
+        $followers = [];
+        $channel = $user->following->getFollowing;
+        foreach ($channel as $fw) {
+            if ($fw->user->username == $request->username){
+                return[
+                    'status' => true
+                ];
+            };
+        };
+
+        return [
+            'status' => false
+        ];
+    }
+
+
+    // get Follower
+    public function getFollower(){
+        $user = Auth::user();
+        $channel = $user->follower->getFollower;
+        $followers = [];
+        foreach ($channel as $fw) {
+            array_push($followers, $fw->user);
+        };
+
+        return [
+            'followers' => $followers
+        ];
+    }
+
+    public function getFollowing(){
+        $user = Auth::user();
+        $channel = $user->following->getFollowing;
+        $followings = [];
+        foreach ($channel as $fw) {
+            array_push($followings, $fw->user);
+        };
+
+        return [
+            'followings' => $followings
+        ];
     }
 }

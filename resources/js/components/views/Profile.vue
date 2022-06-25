@@ -4,21 +4,33 @@
         <div class="row">
             <div class="col-3">
                 <div class="card">
-                    <img :src="image" class="card-img-top img-card" alt="..." />
+                    <img
+                        :src="'/' + image"
+                        class="card-img-top img-card"
+                        alt="..."
+                    />
                     <div class="card-body">
-                        <h6 class="text-muted mb-0">{{ username }}</h6>
+                        <h6 class="text-muted mb-0">
+                            {{ username }}
+                        </h6>
                         <div class="info-account d-flex">
                             <div class="follower me-auto">
-                                <span class="text-muted">
-                                    follower
-                                    <span class="count">0</span>
-                                </span>
+                                <router-link
+                                    to="/profil/follower"
+                                    class="text-muted text-decoration-none"
+                                >
+                                    Follower
+                                    <span class="count">{{ follower }}</span>
+                                </router-link>
                             </div>
                             <div class="following">
-                                <span class="text-muted">
-                                    following
-                                    <span class="count">0</span>
-                                </span>
+                                <router-link
+                                    class="text-muted text-decoration-none"
+                                    to="/profil/following"
+                                >
+                                    Following
+                                    <span class="count">{{ following }}</span>
+                                </router-link>
                             </div>
                         </div>
                         <hr />
@@ -31,10 +43,7 @@
                 </div>
             </div>
             <div class="col-9">
-                <h3 class="text-muted">Postingan</h3>
-                <div class="container">
-                    <Post ref="post" />
-                </div>
+                <router-view> </router-view>
             </div>
         </div>
     </div>
@@ -44,13 +53,14 @@
 import IconShare from "../icons/IconShare.vue";
 import IconLike from "../icons/IconLike.vue";
 import IconComment from "../icons/IconComment.vue";
-import Post from "../partials/Post.vue";
 export default {
     data() {
         return {
             username: "",
             bio: "",
             image: "",
+            follower: "",
+            following: "",
         };
     },
     mounted() {
@@ -61,12 +71,13 @@ export default {
         } else {
             this.image = JSON.parse(localStorage.user).image;
             this.username = JSON.parse(localStorage.user).username;
+            this.follower = JSON.parse(localStorage.user).followers_count;
+            this.following = JSON.parse(localStorage.user).followings_count;
             this.bio = JSON.parse(localStorage.user).bio;
-            this.$refs.post.userPost(JSON.parse(localStorage.user).id);
+            // this.$refs.post.userPost(JSON.parse(localStorage.user).id);
         }
     },
     components: {
-        Post,
         IconShare,
         IconLike,
         IconComment,
@@ -74,8 +85,12 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .img-card {
     height: 259px;
+}
+
+.router-link-active {
+    color: rgba(33, 37, 41, 0.75) !important;
 }
 </style>

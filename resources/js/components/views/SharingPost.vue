@@ -9,7 +9,7 @@
                 <div class="profile-pos d-flex">
                     <img
                         class="rounded-circle profil-picture me-3"
-                        src="/storage/default-avatar.png"
+                        :src="'/' + post.user.image"
                         alt=""
                     />
                     <div class="my-auto">
@@ -34,7 +34,7 @@
                         class="love d-flex m-0 logo text-danger me-3"
                     >
                         <IconLike />
-                        <small class=""> {{ post.like }} </small>
+                        <small class=""> {{ post.likes_count }} </small>
                     </div>
                     <div
                         data-bs-toggle="offcanvas"

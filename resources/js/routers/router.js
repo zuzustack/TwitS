@@ -9,6 +9,11 @@ import UserInfo from "../components/views/UserInfo.vue";
 import NotFound from "../components/views/NotFound.vue";
 import Share from "../components/views/SharingPost.vue";
 
+// Partials
+import ProfilShowPost from "../components/partials/ProfilShowPost.vue";
+import ProfilFollower from "../components/partials/ProfilFollower.vue";
+import ProfilFollowing from "../components/partials/ProfilFollowing.vue";
+
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -29,8 +34,21 @@ const routes = [
     },
     {
         path: "/profil",
-        name: "profil",
         component: Profile,
+        children: [
+            {
+                path: "",
+                component: ProfilShowPost,
+            },
+            {
+                path: "follower",
+                component: ProfilFollower,
+            },
+            {
+                path: "following",
+                component: ProfilFollowing,
+            },
+        ],
     },
     {
         path: "/sharing/:slug",

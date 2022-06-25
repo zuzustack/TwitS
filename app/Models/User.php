@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\channelNotification;
+use App\Models\ChannelLike;
+use App\Models\ChannelFollower;
+use App\Models\ChannelFollowing;
+
 
 class User extends Authenticatable
 {
@@ -27,5 +31,17 @@ class User extends Authenticatable
 
     public function notifications(){
         return $this->hasOne(channelNotification::class);
+    }
+
+    public function like(){
+        return $this->hasOne(ChannelLike::class);
+    }
+
+    public function follower(){
+        return $this->hasOne(ChannelFollower::class);
+    }
+
+    public function following(){
+        return $this->hasOne(ChannelFollowing::class);
     }
 }

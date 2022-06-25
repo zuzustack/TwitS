@@ -10,7 +10,7 @@
                 <div class="profil d-flex">
                     <img
                         class="rounded-circle profil-picture me-3"
-                        :src="post.user.image"
+                        :src="'/' + post.user.image"
                         alt=""
                     />
                     <div>
@@ -40,7 +40,7 @@
                         <div
                             data-bs-toggle="modal"
                             data-bs-target="#ShareModal"
-                            v-on:click="share(post.caption, post_id)"
+                            v-on:click="share(post.slug, post_id)"
                             class="love d-flex m-0 logo text-primary"
                         >
                             <IconShare />
@@ -57,7 +57,7 @@
                     >
                         <div class="d-flex container mb-0">
                             <img
-                                :src="comment.user.image"
+                                :src="'/' + comment.user.image"
                                 alt=""
                                 class="rounded-circle comment-profile me-2"
                             />
