@@ -33,17 +33,18 @@ class UserController extends Controller
 
     // Get Notification
     public function getNotif(){
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $user->unread_notif = 0;
         $user->save();
-        $notifications = $user->notifications->getNotif;
+        $notification = Notification::where('channel_notification_id',$user->notifications->id)
+                                    ->orderBy('created_at','desc')->get();
 
-        foreach ($notifications as $notification) {
-            $notification->user;
-        }
+        foreach ($notification as $notif) {
+            $notif->user;
+        };
 
-        return [
-            'notifications' => $notifications
+        return[
+            'notifications' => $notification
         ];
     }
 
@@ -56,6 +57,14 @@ class UserController extends Controller
         foreach($posts as $post){
             array_push($date, $post->created_at->diffForHumans());
             $post->user;
+
+            $check = Like::where('post_id', $post->id)
+            ->where('channel_like_id',Auth::user()->like->id)->get();
+            if(count($check) == 0){
+                $post['liked'] = false;
+            }else{
+                $post['liked'] = true;
+            }
         }
 
         return [
@@ -65,47 +74,35 @@ class UserController extends Controller
     }
 
     // edit user
-    public function uploadImage(Request $request){
-        if ($request->file('image')){
+    public function updateUser(Request $request){
+        // Menghapus foto yang sudah ada untuk diganti foto baru
+        $user = Auth::user();
 
-            // Random Token
-            $token = Str::random(10);
+        if (File::exists($user->image) && $user->image != "storage/default-avatar.png" && $user->tempImage != ""){
+            unlink($user->image);
 
-            // Menghapus foto yang sudah ada untuk diganti foto baru
-            if (File::exists(Auth::user()->image) && !Auth::user()->image == "storage/default-avatar.png"){
-                unlink(Auth::user()->image);
-            }
-
-            // get file
-            $file = $request->file('image');
-
-            // mengenerate nama file
-            $filename = Auth::user()->username . "-" . $token .'.' . $file->extension();
-
-            // save file ke storage/image/user
-            $file->move(public_path('storage/image/user'), $filename);
-
-            // Mengubah url image
-            $user = Auth::user();
-            $user->image = 'storage/image/user/' . $filename;
-            $user->save();
         }
-
+        if ($user->tempImage != ""){
+            $user->image = $user->tempImage;
+        }
+        $user->tempImage = "";
+        $user->save();
 
         if (isset($request->name)){
-            $user = Auth::user();
             $user->name = $request->name;
             $user->save();
         }
 
         if (isset($request->bio)){
-            $user = Auth::user();
             $user->bio = $request->bio;
             $user->save();
         }
 
         return response()->json([
-            'message' => True
+            'message' => True,
+            'bio' => $user->bio,
+            'name' => $user->name,
+            'image' => $user->image,
         ], 200);
     }
 
@@ -276,7 +273,6 @@ class UserController extends Controller
         ];
     }
 
-
     // get Follower
     public function getFollower(){
         $user = Auth::user();
@@ -302,5 +298,9 @@ class UserController extends Controller
         return [
             'followings' => $followings
         ];
+    }
+
+    public function cancelUpdateUser(){
+
     }
 }

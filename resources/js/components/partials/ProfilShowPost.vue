@@ -1,7 +1,7 @@
 <template>
     <h3 class="text-muted">Postingan</h3>
     <div class="container">
-        <Post ref="post" />
+        <Post ref="post" :showForm="true" :showOption="true" />
     </div>
 </template>
 

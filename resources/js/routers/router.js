@@ -35,6 +35,7 @@ const routes = [
     {
         path: "/profil",
         component: Profile,
+        name: "profil",
         children: [
             {
                 path: "",

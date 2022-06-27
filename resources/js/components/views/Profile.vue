@@ -63,12 +63,17 @@ export default {
             following: "",
         };
     },
-    mounted() {
+
+    beforeMount() {
         if (JSON.parse(localStorage.isLogin) === false) {
             this.$router.push({
                 name: "login",
             });
-        } else {
+        }
+    },
+
+    mounted() {
+        if (JSON.parse(localStorage.isLogin) === true) {
             this.image = JSON.parse(localStorage.user).image;
             this.username = JSON.parse(localStorage.user).username;
             this.follower = JSON.parse(localStorage.user).followers_count;

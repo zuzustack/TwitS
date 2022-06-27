@@ -99,12 +99,12 @@
         </div>
     </div>
 
-    <Modal ref="modal" />
+    <ModalShare ref="modal" />
 </template>
 
 <script>
 import IconShare from "../icons/IconShare.vue";
-import Modal from "./Modal.vue";
+import ModalShare from "./ModalShare.vue";
 import IconLike from "../icons/IconLike.vue";
 
 export default {
@@ -124,7 +124,7 @@ export default {
 
     components: {
         IconShare,
-        Modal,
+        ModalShare,
         IconLike,
     },
 

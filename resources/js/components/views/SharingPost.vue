@@ -64,13 +64,13 @@
         </div>
     </div>
 
-    <Modal ref="modal" />
+    <ModalShare ref="modal" />
     <Comments :post="post" :show="showComment" />
 </template>
 
 <script>
 import Comments from "../partials/Comment.vue";
-import Modal from "../partials/Modal.vue";
+import ModalShare from "../partials/ModalShare.vue";
 import IconShare from "../icons/IconShare.vue";
 import IconComment from "../icons/IconComment.vue";
 import IconLike from "../icons/IconLike.vue";
@@ -80,7 +80,7 @@ export default {
         IconComment,
         IconLike,
         Comments,
-        Modal,
+        ModalShare,
     },
     data() {
         return {

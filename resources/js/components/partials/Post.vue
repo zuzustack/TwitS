@@ -11,18 +11,38 @@
                             v-bind:src="'/' + post.user.image"
                             alt=""
                         />
-                        <div class="my-auto">
-                            <h4 class="d-inline-block mb-0">
-                                {{ post.user.name }}
-                            </h4>
-                            <router-link
-                                class="text-decoration-none"
-                                :to="'/user/' + post.user.username"
-                            >
-                                <h6 class="text-muted mb-0">
-                                    {{ post.user.username }}
-                                </h6>
-                            </router-link>
+                        <div class="d-flex my-auto w-100">
+                            <div class="me-auto">
+                                <h4 class="d-inline-block mb-0">
+                                    {{ post.user.name }}
+                                </h4>
+                                <router-link
+                                    class="text-decoration-none"
+                                    :to="'/user/' + post.user.username"
+                                >
+                                    <h6 class="text-muted mb-0">
+                                        {{ post.user.username }}
+                                    </h6>
+                                </router-link>
+                            </div>
+                            <div v-if="showOption" class="dropstart">
+                                <IconThreeDot
+                                    class="logo"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    :value="20"
+                                />
+                                <ul class="dropdown-menu">
+                                    <li
+                                        v-on:click="warning(post.id, index)"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#OptionModal"
+                                        class="dropdown-item logo"
+                                    >
+                                        Delete Post
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <!-- Caption -->
@@ -32,8 +52,18 @@
                     <!-- action -->
                     <div v-if="isLogin" class="action-user mb-0 d-flex">
                         <div
-                            v-on:click="like(post.id)"
-                            class="love d-flex m-0 logo text-danger me-3"
+                            v-if="post.liked"
+                            v-on:click="like(post.id, index)"
+                            :class="['love d-flex m-0 logo me-3', status_text]"
+                        >
+                            <IconFullLike class="me-1" />
+                            <small class=""> {{ post.likes_count }} </small>
+                        </div>
+                        <div
+                            :disabled="isDisable"
+                            v-else
+                            v-on:click="like(post.id, index)"
+                            :class="['love d-flex m-0 logo me-3', status_text]"
                         >
                             <IconLike />
                             <small class=""> {{ post.likes_count }} </small>
@@ -76,37 +106,47 @@
             <span class="visually-hidden justify-self-center">Loading...</span>
         </div>
     </div>
-    <Modal ref="modal" />
+
+    <ModalShare ref="modal" />
     <Comments :post="post" :show="showComment" />
+    <ModalOption @send="hapus" v-if="showOption" ref="option" />
 </template>
 
 <script>
 import PostForm from "./PostForm.vue";
 import Comments from "./Comment.vue";
-import Modal from "./Modal.vue";
+import ModalShare from "./ModalShare.vue";
+import ModalOption from "./ModalDelete.vue";
 import IconShare from "../icons/IconShare.vue";
 import IconComment from "../icons/IconComment.vue";
 import IconLike from "../icons/IconLike.vue";
+import IconFullLike from "../icons/IconFullLike.vue";
+import IconThreeDot from "../icons/IconThreeDot.vue";
 
 export default {
     data() {
         return {
+            status_text: "text-danger",
             posts: null,
             date: null,
-
+            isDisable: false,
             post: null,
             showComment: false,
 
             isLoad: false,
         };
     },
+
     components: {
-        Modal,
+        ModalOption,
+        ModalShare,
         Comments,
         IconShare,
         IconComment,
         IconLike,
+        IconFullLike,
         PostForm,
+        IconThreeDot,
     },
 
     beforeMount() {
@@ -118,15 +158,13 @@ export default {
             type: Boolean,
             default: false,
         },
+        showOption: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     methods: {
-        test() {
-            axios.get("/sanctum/csrf-cookie").then((response) => {
-                console.log(response);
-            });
-        },
-
         async show(id) {
             await axios
                 .get("http://127.0.0.1:8000/api/post/" + id)
@@ -147,7 +185,6 @@ export default {
                     .then((response) => {
                         this.posts = response.data.posts;
                         this.date = response.data.date;
-                        this.image = response.data.image;
                     });
             } else {
                 await axios
@@ -160,13 +197,26 @@ export default {
             this.isLoad = true;
         },
 
-        async like(id) {
-            await axios
-                .post("http://127.0.0.1:8000/api/add/like/" + id)
-                .then((response) => {
-                    // this.$router.go();
-                    console.log(response.data);
-                });
+        async like(id, index) {
+            if (!this.isDisable) {
+                await axios
+                    .post("http://127.0.0.1:8000/api/add/like/" + id)
+                    .then((response) => {
+                        this.status_text = "text-secondary";
+                        this.isDisable = true;
+                        if (this.posts[index].liked) {
+                            this.posts[index].likes_count -= 1;
+                        } else {
+                            this.posts[index].likes_count += 1;
+                        }
+                        this.posts[index].liked = !this.posts[index].liked;
+                    });
+            }
+
+            setTimeout(() => {
+                this.isDisable = false;
+                this.status_text = "text-danger";
+            }, 900);
         },
 
         async userPost(id) {
@@ -177,6 +227,20 @@ export default {
                     this.date = response.data.date;
                 });
             this.isLoad = true;
+        },
+
+        warning(id, index) {
+            this.$refs.option.setId(id, index);
+        },
+
+        async hapus(data) {
+            await axios
+                .post("http://127.0.0.1:8000/api/delete/post", {
+                    id: data.id,
+                })
+                .then((response) => {
+                    this.posts.splice(data.index, data.index);
+                });
         },
     },
 };

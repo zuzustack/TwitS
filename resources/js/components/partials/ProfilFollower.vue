@@ -1,7 +1,9 @@
 <template>
     <div class="d-flex">
         <h3 class="text-muted me-auto">Follower</h3>
-        <router-link to="/profil" class="btn btn-warning">Back</router-link>
+        <router-link to="/profil" class="btn btn-outline-secondary">
+            Back
+        </router-link>
     </div>
     <div class="container mt-2">
         <div class="card mb-3" v-for="follower in followers">
@@ -46,4 +48,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.btn.router-link-active {
+    color: #6c757d !important;
+}
+.btn.router-link-active:hover {
+    color: #fff !important;
+}
+</style>

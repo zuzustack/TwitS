@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use App\Models\Like;
 use App\Models\Notification;
 
 class PostController extends Controller
@@ -22,12 +23,18 @@ class PostController extends Controller
         foreach($posts as $post){
             array_push($date, $post->created_at->diffForHumans());
             $post->user;
+            $check = Like::where('post_id', $post->id)
+                        ->where('channel_like_id',Auth::user()->like->id)->get();
+            if(count($check) == 0){
+                $post['liked'] = false;
+            }else{
+                $post['liked'] = true;
+            }
         }
 
         return [
             'posts' => $posts,
             'date' => $date,
-            'image' => asset('storage/index.jpg')
         ];
     }
 
@@ -110,28 +117,37 @@ class PostController extends Controller
     // add like
     public function addLike($id){
         $post = Post::find($id);
-        $post->increment('likes_count');
-
-        // Create notifikasi
         $user = $post->user;
-        $id_channel = $user->notifications->id;
-
-        if ($id_channel != Auth::user()->notifications->id){
-            Notification::create([
-                'body' => 'menyukai postinganmu',
-                'type' => 'like',
-                'user_id' => Auth::user()->id,
-                'channel_notification_id' => $id_channel
+        $check = Like::where('post_id',$id)
+                    ->where('channel_like_id',Auth::user()->like->id)->get();
+        if (count($check) == 0) {
+            Like::create([
+                'post_id' => $id,
+                'channel_like_id' => Auth::user()->like->id
             ]);
-
-            $user->increment('unread_notif');
+            // Create notifikasi
+            $id_channel = $user->notifications->id;
+            if ($id_channel != Auth::user()->notifications->id){
+                Notification::create([
+                    'body' => 'menyukai postinganmu',
+                    'type' => 'like',
+                    'user_id' => Auth::user()->id,
+                    'channel_notification_id' => $id_channel
+                ]);
+                $user->increment('unread_notif');
+            }
+            $status = "berhasil di like";
+            $post->increment('likes_count');
+        }else {
+            Like::where('channel_like_id',Auth::user()->like->id)
+                ->where('post_id',$id)->first()->delete();
+            $status = "unlike";
+            $post->decrement('likes_count');
         }
 
-
-
-        return response()->json([
-            'message' => 'Like added'
-        ], 201);
+        return [
+            $status
+        ];
     }
 
     public function addShare($id){
@@ -140,5 +156,13 @@ class PostController extends Controller
         return response()->json([
             'message' => 'Like added'
         ], 201);
+    }
+
+
+    public function delete(Request $request){
+        Post::find($request->id)->delete();
+        return [
+            "Success to delete"
+        ];
     }
 }

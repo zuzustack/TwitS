@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('unread_notif')->default(0);
             $table->string('bio')->default("");
             $table->string('image')->default("storage/default-avatar.png");
+            $table->string('tempImage')->default("");
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

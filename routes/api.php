@@ -6,6 +6,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ImageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,11 +33,14 @@ Route::post("/add/post",[PostController::class,'add']);
 Route::get("/add/post",[PostController::class,'add']);
 Route::post("/add/like/{id}",[PostController::class,'addLike']);
 Route::post("/add/share/{id}",[PostController::class,'addShare']);
+Route::post("/delete/post",[PostController::class,'delete']);
+
 
 // User Controller
 Route::get("/user/{id}",[UserController::class,'index']);
 Route::get("/user/{id}/post",[UserController::class,'userPost']);
-Route::post("/upload/image",[UserController::class,'uploadImage']);
+Route::post("/update/user",[UserController::class,'updateUser']);
+Route::post("/upload/temp/user",[ImageController::class,'uploadTempImage']);
 Route::get("/notification/user",[UserController::class, 'getNotif']);
 Route::get("/follower/user",[UserController::class, 'getFollower']);
 Route::get("/following/user",[UserController::class, 'getFollowing']);
