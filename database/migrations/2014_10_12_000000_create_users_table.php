@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('image')->default("storage/default-avatar.png");
             $table->string('tempImage')->default("");
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('email_confirm')->default(false);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

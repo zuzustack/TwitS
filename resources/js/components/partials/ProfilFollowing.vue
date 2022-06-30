@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <h3 class="text-muted me-auto">Following</h3>
-        <router-link to="/profil" class="btn btn-outline-secondary">
+        <router-link :to="{ path: backPath }" class="btn btn-outline-secondary">
             Back
         </router-link>
     </div>
@@ -33,6 +33,7 @@
 
 <script>
 export default {
+    props: ["showForm", "id", "backPath"],
     data() {
         return {
             followings: [],
@@ -41,10 +42,11 @@ export default {
 
     async beforeMount() {
         await axios
-            .get("http://127.0.0.1:8000/api/following/user")
+            .post("http://127.0.0.1:8000/api/following/user", {
+                id: this.$props.id,
+            })
             .then((response) => {
                 this.followings = response.data.followings;
-                console.log(response.data.followings);
             });
     },
 };

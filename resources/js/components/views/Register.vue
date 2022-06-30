@@ -2,7 +2,7 @@
     <div class="container mt-3 w-25">
         <div v-if="success" class="alert alert-success" role="alert">
             {{ message }}
-            <router-link to="/login">Login Sekarang?</router-link>
+            <router-link to="/verifikasi-email">Verifikasi Email</router-link>
         </div>
 
         <h5 class="text-center">Register Form</h5>

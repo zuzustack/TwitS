@@ -55,7 +55,11 @@ export default {
                         this.type = true;
                         this.message = "Postingan Diupload";
                         this.info = true;
-                        this.$emit("updatePost");
+                        this.$emit(
+                            "updatePost",
+                            response.data.post,
+                            response.data.date
+                        );
                     });
             } else {
                 this.type = false;

@@ -1,5 +1,5 @@
 <template>
-    <PostForm @updatePost="getPost" v-if="showForm && isLogin" />
+    <PostForm @updatePost="updatePost" v-if="showForm && isLogin" />
     <div v-if="isLoad" class="posts container mt-3">
         <div v-if="posts.length > 0" v-for="(post, index) in posts">
             <div class="card mb-2">
@@ -73,7 +73,7 @@
                             data-bs-target="#offcanvasRight"
                             aria-controls="offcanvasRight"
                             class="love d-flex m-0 logo text-success me-3"
-                            v-on:click="show(post.id)"
+                            v-on:click="show(post.id, index, post.liked)"
                         >
                             <IconComment />
                             <small class=""> {{ post.comments_count }} </small>
@@ -108,7 +108,13 @@
     </div>
 
     <ModalShare ref="modal" />
-    <Comments :post="post" :show="showComment" />
+    <Comments
+        ref="comment"
+        @incComment="incComment"
+        @like="like"
+        @showShare="share"
+        :show="showComment"
+    />
     <ModalOption @send="hapus" v-if="showOption" ref="option" />
 </template>
 
@@ -132,7 +138,6 @@ export default {
             isDisable: false,
             post: null,
             showComment: false,
-
             isLoad: false,
         };
     },
@@ -165,16 +170,23 @@ export default {
     },
 
     methods: {
-        async show(id) {
+        updatePost(post, date) {
+            this.posts.unshift(post);
+            this.date.unshift(date);
+        },
+
+        async show(id, index, liked) {
             await axios
                 .get("http://127.0.0.1:8000/api/post/" + id)
                 .then((response) => {
                     this.post = response.data.post;
                 });
             this.showComment = true;
+            this.$refs.comment.show(id, index, liked, this.post, true);
         },
 
         share(s, id) {
+            console.log("test");
             this.$refs.modal.show(s, id);
         },
         async getPost(search = null) {
@@ -195,6 +207,10 @@ export default {
                     });
             }
             this.isLoad = true;
+        },
+
+        incComment(index) {
+            this.posts[index].comments_count += 1;
         },
 
         async like(id, index) {
@@ -239,7 +255,7 @@ export default {
                     id: data.id,
                 })
                 .then((response) => {
-                    this.posts.splice(data.index, data.index);
+                    this.posts.splice(data.index, 1);
                 });
         },
     },

@@ -42,8 +42,8 @@ Route::get("/user/{id}/post",[UserController::class,'userPost']);
 Route::post("/update/user",[UserController::class,'updateUser']);
 Route::post("/upload/temp/user",[ImageController::class,'uploadTempImage']);
 Route::get("/notification/user",[UserController::class, 'getNotif']);
-Route::get("/follower/user",[UserController::class, 'getFollower']);
-Route::get("/following/user",[UserController::class, 'getFollowing']);
+Route::post("/follower/user",[UserController::class, 'getFollower']);
+Route::post("/following/user",[UserController::class, 'getFollowing']);
 Route::post("/follow",[UserController::class, 'follow']);
 
 Route::post("/check-follow",[UserController::class, 'checkFollow']);

@@ -41,15 +41,16 @@ export default {
         Post,
     },
 
-    mounted() {
-        if (this.$route.query.s) {
-            this.s = this.$route.query.s;
-            this.search();
+    beforeRouteEnter(to, from, next) {
+        if (!JSON.parse(localStorage.isLogin)) {
+            window.location.href = "/login";
         }
+        next();
     },
 
     data() {
         return {
+            s: "",
             post: [],
             submit: false,
             keySearch: "",

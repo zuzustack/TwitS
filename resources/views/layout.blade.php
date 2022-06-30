@@ -11,14 +11,26 @@
 </head>
 
 <body>
+    @if (Auth::check())
+        <script>
+            window.laravel = {!! json_encode([
+    'isLogin' => true,
+    'email_confirm' => Auth::user()->email_confirm,
+]) !!}
+        </script>
+    @else
+        <script>
+            window.laravel = {!! json_encode([
+    'isLogin' => false,
+]) !!}
+        </script>
+    @endif
+
+
     <div id="app"></div>
     <script src="/js/app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
-    </script>
-    <script>
-        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     </script>
 </body>
 

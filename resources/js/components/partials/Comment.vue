@@ -5,7 +5,7 @@
         id="offcanvasRight"
         aria-labelledby="offcanvasRightLabel"
     >
-        <div v-if="show">
+        <div v-if="showContent">
             <div class="offcanvas-header">
                 <div class="profil d-flex">
                     <img
@@ -21,7 +21,6 @@
                     </div>
                 </div>
                 <button
-                    v-on:click="$router.go()"
                     type="button"
                     class="btn-close"
                     data-bs-dismiss="offcanvas"
@@ -33,14 +32,26 @@
                     <div class="caption">{{ post.caption }}</div>
                     <!-- Action -->
                     <div class="action-user d-flex mt-3">
-                        <div class="love d-flex m-0 logo text-danger me-3">
-                            <IconLike />
-                            <small class=""> {{ post.like }} </small>
+                        <div
+                            v-if="liked"
+                            v-on:click="like(post.id, index)"
+                            :class="['love d-flex m-0 logo me-3', status_text]"
+                        >
+                            <IconFullLike class="me-1" />
+                            <small class=""> {{ post.likes_count }} </small>
                         </div>
                         <div
+                            v-else
+                            v-on:click="like(post.id, index)"
+                            :class="['love d-flex m-0 logo me-3', status_text]"
+                        >
+                            <IconLike />
+                            <small class=""> {{ post.likes_count }} </small>
+                        </div>
+                        <div
+                            v-on:click="share(post.slug, post.id)"
                             data-bs-toggle="modal"
                             data-bs-target="#ShareModal"
-                            v-on:click="share(post.slug, post_id)"
                             class="love d-flex m-0 logo text-primary"
                         >
                             <IconShare />
@@ -98,39 +109,65 @@
             </div>
         </div>
     </div>
-
-    <ModalShare ref="modal" />
 </template>
 
 <script>
 import IconShare from "../icons/IconShare.vue";
 import ModalShare from "./ModalShare.vue";
 import IconLike from "../icons/IconLike.vue";
+import IconFullLike from "../icons/IconFullLike.vue";
 
 export default {
     data() {
         return {
+            isDelay: false,
+            status_text: "text-danger",
             body: "",
+            liked: "",
+            index: "",
+            id: "",
+            post: "",
+            showContent: false,
         };
     },
-    props: {
-        post: {
-            required: true,
-        },
-        show: {
-            required: true,
-        },
-    },
-
     components: {
         IconShare,
         ModalShare,
+        IconFullLike,
         IconLike,
     },
 
     methods: {
+        show(id, index, liked, post, show) {
+            this.id = id;
+            this.index = index;
+            this.liked = liked;
+            this.post = post;
+            this.showContent = show;
+        },
         share(s, id) {
-            this.$refs.modal.show(s, id);
+            this.$emit("showShare", s, id);
+        },
+
+        like() {
+            if (!this.isDelay) {
+                if (this.liked && !this.isDelay) {
+                    this.post.likes_count -= 1;
+                    this.liked = false;
+                } else {
+                    this.liked = true;
+                    this.post.likes_count += 1;
+                }
+
+                this.$emit("like", this.id, this.index);
+                this.status_text = "text-secondary";
+                this.isDelay = true;
+            }
+
+            setTimeout(() => {
+                this.isDelay = false;
+                this.status_text = "text-danger";
+            }, 900);
         },
         async addComment() {
             if (this.body) {
@@ -144,6 +181,8 @@ export default {
                         this.body = "";
                         this.post.comments = response.data;
                     });
+
+                this.$emit("incComment", this.index);
             }
         },
     },

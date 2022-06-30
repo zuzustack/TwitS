@@ -8,6 +8,7 @@ import ProfilEdit from "../components/views/ProfilEdit.vue";
 import UserInfo from "../components/views/UserInfo.vue";
 import NotFound from "../components/views/NotFound.vue";
 import Share from "../components/views/SharingPost.vue";
+import VerifikasiEmail from "../components/views/VerifikasiEmail.vue";
 
 // Partials
 import ProfilShowPost from "../components/partials/ProfilShowPost.vue";
@@ -58,10 +59,29 @@ const routes = [
         component: Share,
     },
     {
+        path: "/verifikasi-email",
+        name: "verifikasiEmail",
+        component: VerifikasiEmail,
+    },
+    {
         path: "/user/:username",
         name: "userInfo",
         props: true,
         component: UserInfo,
+        children: [
+            {
+                path: "",
+                component: ProfilShowPost,
+            },
+            {
+                path: "follower",
+                component: ProfilFollower,
+            },
+            {
+                path: "following",
+                component: ProfilFollowing,
+            },
+        ],
     },
     {
         path: "/profil-edit",

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Http\Controllers\EmailController;
 use File;
 use Validator;
 
@@ -127,7 +128,7 @@ class UserController extends Controller
 
         $user = collect($request->all());
 
-        User::create([
+        $user = User::create([
             'name' => $user['name'],
             'email' => $user['email'],
             'username' => "@" . $user['username'],
@@ -151,9 +152,11 @@ class UserController extends Controller
             'user_id' => $user->id
         ]);
 
+        EmailController::SendConfirmEmail($user->email, $user->username);
+
         return [
             'success' => true,
-            'message' => "Berhasil Membuat Akun"
+            'message' => "Berhasil Membuat Akun, silahkan"
         ];
 
     }
@@ -274,8 +277,8 @@ class UserController extends Controller
     }
 
     // get Follower
-    public function getFollower(){
-        $user = Auth::user();
+    public function getFollower(Request $request){
+        $user = User::find($request->id);
         $channel = $user->follower->getFollower;
         $followers = [];
         foreach ($channel as $fw) {
@@ -287,8 +290,8 @@ class UserController extends Controller
         ];
     }
 
-    public function getFollowing(){
-        $user = Auth::user();
+    public function getFollowing(Request $request){
+        $user = User::find($request->id);
         $channel = $user->following->getFollowing;
         $followings = [];
         foreach ($channel as $fw) {

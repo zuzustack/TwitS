@@ -36,14 +36,20 @@
                         <hr />
                         <p>{{ bio }}</p>
                         <hr />
-                        <router-link to="/profil-edit" class="btn btn-primary"
-                            >Edit Profil</router-link
-                        >
+                        <router-link to="/profil-edit" class="btn btn-primary">
+                            Edit Profil
+                        </router-link>
                     </div>
                 </div>
             </div>
             <div class="col-9">
-                <router-view> </router-view>
+                <router-view
+                    :id="id"
+                    :backPath="path"
+                    :showOption="true"
+                    :showForm="true"
+                >
+                </router-view>
             </div>
         </div>
     </div>
@@ -56,11 +62,13 @@ import IconComment from "../icons/IconComment.vue";
 export default {
     data() {
         return {
+            path: "/profil",
             username: "",
             bio: "",
             image: "",
             follower: "",
             following: "",
+            id: JSON.parse(localStorage.user).id,
         };
     },
 
@@ -72,6 +80,13 @@ export default {
         }
     },
 
+    beforeRouteEnter(to, from, next) {
+        if (!JSON.parse(localStorage.isLogin)) {
+            window.location.href = "/login";
+        }
+        next();
+    },
+
     mounted() {
         if (JSON.parse(localStorage.isLogin) === true) {
             this.image = JSON.parse(localStorage.user).image;
@@ -79,7 +94,7 @@ export default {
             this.follower = JSON.parse(localStorage.user).followers_count;
             this.following = JSON.parse(localStorage.user).followings_count;
             this.bio = JSON.parse(localStorage.user).bio;
-            // this.$refs.post.userPost(JSON.parse(localStorage.user).id);
+            console.log(this.id);
         }
     },
     components: {

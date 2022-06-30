@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <h3 class="text-muted me-auto">Follower</h3>
-        <router-link to="/profil" class="btn btn-outline-secondary">
+        <router-link :to="{ path: backPath }" class="btn btn-outline-secondary">
             Back
         </router-link>
     </div>
@@ -33,6 +33,8 @@
 
 <script>
 export default {
+    props: ["showForm", "id", "backPath"],
+
     data() {
         return {
             followers: "",
@@ -40,7 +42,9 @@ export default {
     },
     async beforeMount() {
         await axios
-            .get("http://127.0.0.1:8000/api/follower/user")
+            .post("http://127.0.0.1:8000/api/follower/user", {
+                id: this.$props.id,
+            })
             .then((response) => {
                 this.followers = response.data.followers;
             });

@@ -51,6 +51,7 @@ export default {
         show(s, id) {
             this.link = "http://127.0.0.1:8000/sharing/" + s;
             this.id = id;
+            console.log(this.link);
         },
 
         async copy() {

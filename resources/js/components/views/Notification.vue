@@ -42,6 +42,13 @@ export default {
         };
     },
 
+    beforeRouteEnter(to, from, next) {
+        if (!JSON.parse(localStorage.isLogin)) {
+            window.location.href = "/login";
+        }
+        next();
+    },
+
     beforeMount() {
         axios
             .get("http://127.0.0.1:8000/api/notification/user")

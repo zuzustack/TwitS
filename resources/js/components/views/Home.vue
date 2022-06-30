@@ -32,6 +32,14 @@ export default {
         this.$refs.getPost.getPost();
     },
 
+    beforeRouteEnter(to, from, next) {
+        if (!JSON.parse(localStorage.isLogin)) {
+            window.location.href = "/login";
+        }
+
+        next();
+    },
+
     components: {
         Navbar,
         Post,

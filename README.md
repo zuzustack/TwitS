@@ -10,7 +10,7 @@ My first social media clone like a twitter
 
 ## Info App
 
--   Version : 0.5.2
+-   Version : 0.9.5
 -   Debug : True
 -   Laravel : 9
 -   Bootstrap : 5.2

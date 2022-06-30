@@ -1,17 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Mail\TestMail;
-use Illuminate\Support\Facades\Mail;
+
+use Mail;
 use Illuminate\Http\Request;
+use App\Mail\ConfirmEmailMail;
+use App\Mail\ResetPasswordMail;
 
-class EmailController extends Controller
-{
-    public function test(){
-        Mail::to('ridwanyamada@gmail.com')->send(new TestMail());
+class EmailController extends Controller{
+    public static function SendConfirmEmail($email,$username){
+        Mail::to($email)->send(new ConfirmEmailMail($username));
+    }
 
-        return [
-            'Email Sended'
-        ];
+    public static function SendResetPassword($email, $username){
+        Mail::to($email)->send(new ResetPasswordMail($username));
     }
 }

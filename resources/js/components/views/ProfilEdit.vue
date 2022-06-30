@@ -19,10 +19,10 @@
                         alt="Photo-Profil-User"
                         class="photo rounded-circle"
                     />
-                    <h5>
+                    <h5 class="cursor-pointer">
                         <label
                             for="formFile"
-                            class="position-absolute top-75 start-50 translate-middle badge rounded-pill bg-primary"
+                            class="cursor-pointer position-absolute top-75 start-50 translate-middle badge rounded-pill bg-primary"
                         >
                             Edit
                         </label>
@@ -118,7 +118,7 @@ export default {
 
             setTimeout(() => {
                 this.message = false;
-            }, 900);
+            }, 3000);
         },
 
         cancel() {
@@ -142,5 +142,9 @@ export default {
 .photo {
     width: 100px;
     height: 100px;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
 }
 </style>

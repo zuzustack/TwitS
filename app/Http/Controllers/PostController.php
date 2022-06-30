@@ -91,7 +91,7 @@ class PostController extends Controller
             ], 400);
         }
         $token = Str::random(10);
-        Post::create([
+        $post = Post::create([
             'slug' => $token,
             'user_id' => Auth::user()->id,
             'caption' => $request->caption,
@@ -100,8 +100,14 @@ class PostController extends Controller
             'comments_count' => 0,
         ]);
 
+        $post->user;
+        $date = $post->created_at->diffForHumans();
+
+
         return response()->json([
-            'message' => 'Post created'
+            'message' => 'Post created',
+            'post' => $post,
+            'date' => $date,
         ], 201);
     }
 
