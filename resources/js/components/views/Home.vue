@@ -37,6 +37,9 @@ export default {
             window.location.href = "/login";
         }
 
+        if (!window.laravel.email_confirm) {
+            window.location.href = "/verifikasi-email";
+        }
         next();
     },
 
